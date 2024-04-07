@@ -1,0 +1,14 @@
+{layout "base/pageframe.latte"}
+
+{import "partials/msd_library.latte"}
+
+{var $pageTitle = "Simple Mozilla Documentation"}
+
+{block content}
+    <h1>Simple Mozilla Documentation</h1>
+    <p class="description">
+        Because Mozilla's own documentation can be pretty hard to understand, I decided to make my own introductory
+        documentation to the Mozilla platform.
+    </p>
+    {include msdLibrary, 2}
+{/block}

@@ -1,0 +1,14 @@
+{define msdLibrary, $level = 1}
+    <div class="msd-library">
+        <h{$level}>Library</h{$level}>
+        <ul>
+            {foreach $getMsdPages() as $entry}
+                <li class="msd-library-entry">
+                    <a href={= "/mozilla_simple_docs/" . $entry[1] }>
+                        {$entry[0]}
+                    </a>
+                </li>
+            {/foreach}
+        </ul>
+    </div>
+{/define}

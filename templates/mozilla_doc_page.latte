@@ -1,0 +1,18 @@
+{layout "base/pageframe.latte"}
+
+{var $pageTitle = $msdTitle}
+
+{block pageTitleBlock}
+{$msdTitle} - kawapure's simple Mozilla documentation
+{/block}
+
+{block content}
+    <div class="breadcrumb-container">
+        <a href="/mozilla_simple_docs/">
+            Simple Mozilla Documentation
+        </a> &gt; <b>{$msdTitle}</b>
+    </div>
+    <div id="doc-contents" class="markdown-output" lang="en">
+        {$msdContents|noescape}
+    </div>
+{/block}
