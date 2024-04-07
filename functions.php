@@ -7,8 +7,6 @@ function buildPage(
     array $params = []
 ): void
 {
-    global $g_context;
-
     if (empty($pageContextName))
     {
         $pageContextName = $path;
@@ -20,11 +18,11 @@ function buildPage(
     }
 
     $params["pageName"] = $pageContextName;
-    $params["getMsdPages"] = $g_context->getGetMsdPagesWrapper();
+    $params["getMsdPages"] = KawapureSiteContext::getGetMsdPagesWrapper();
 
     echo "Building page $path.html ($pageContextName) with $template.latte \n";
 
-    $output = $g_context->latte->renderToString($template . ".latte", $params);
+    $output = KawapureSiteContext::$latte->renderToString($template . ".latte", $params);
 
-    $g_context->writePublicPage("public/" . $path . ".html", $output);
+    KawapureSiteContext::writePublicPage("public/" . $path . ".html", $output);
 }

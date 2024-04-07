@@ -3,9 +3,9 @@ require "vendor/autoload.php";
 require "context.php";
 require "functions.php";
 
-$g_context = new KawapureSiteContext;
-$g_context->workingDir = realpath(dirname(__FILE__));
+KawapureSiteContext::$workingDir = realpath(dirname(__FILE__));
 
+// Begin site building:
 echo "Building website...\n";
 
 buildPage("index");
@@ -21,5 +21,11 @@ MSD::buildAll();
 
 echo "Building static resources...\n";
 
+/*
+ * Build Gulp resources (CSS, JS).
+ *
+ * We disable the PHP time limit here, since this could realistically take longer
+ * than the time limit, and we're waiting on an external script.
+ */
 set_time_limit(0);
 shell_exec("gulp build");

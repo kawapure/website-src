@@ -1,19 +1,20 @@
 <?php
 
+/**
+ * Stores global site building context.
+ */
 class KawapureSiteContext
 {
-    public Latte\Engine $latte;
+    public static Latte\Engine $latte;
 
-    public string $workingDir;
+    public static string $workingDir;
 
-    public function __construct()
+    /**
+     * Writes a finished page build to the public directory.
+     */
+    public static function writePublicPage(string $path, string $data): void
     {
-        $this->latte = new Latte\Engine;
-    }
-
-    public function writePublicPage(string $path, string $data): void
-    {
-        $fh = fopen($this->workingDir . "/" . $path, "w");
+        $fh = fopen(self::$workingDir . "/" . $path, "w");
 
         if ($fh)
         {
@@ -22,11 +23,17 @@ class KawapureSiteContext
         }
     }
 
-    public function getGetMsdPagesWrapper(): Closure
+    /**
+     * Gets MSD::getEntries, wrapped in a Closure for consumption in the
+     * Latte environment.
+     */
+    public static function getGetMsdPagesWrapper(): Closure
     {
         return Closure::fromCallable(MSD::class . "::getEntries");
     }
 }
+
+KawapureSiteContext::$latte = new Latte\Engine;
 
 /**
  * Mozilla Simple Docs controller class
@@ -35,11 +42,17 @@ class MSD
 {
     private static array $registry = [];
 
+    /**
+     * Registers an MSD page.
+     */
     public static function register(string $title, string $doc): void
     {
         self::$registry[] = [$title, $doc];
     }
 
+    /**
+     * Builds all MSD pages in the registry.
+     */
     public static function buildAll(): void
     {
         foreach (self::$registry as $entry)
@@ -48,27 +61,32 @@ class MSD
         }
     }
 
+    /**
+     * Gets all registered MSD pages.
+     */
     public static function getEntries(): array
     {
         return self::$registry;
     }
 
-    public static function build(string $title, string $doc): void
+    /**
+     * Builds a single MSD page.
+     */
+    protected static function build(string $title, string $doc): void
     {
         echo "Building Mozilla simple docs page $title ($doc)\n";
-        global $g_context;
 
         $pd = new Parsedown();
         $file = file_get_contents("templates/mozilla_simple_docs/$doc.md");
 
         $contents = $pd->text($file);
 
-        $output = $g_context->latte->renderToString("templates/mozilla_doc_page.latte", [
+        $output = KawapureSiteContext::$latte->renderToString("templates/mozilla_doc_page.latte", [
             "pageName" => "mozilla-simple-docs-$doc",
             "msdTitle" => $title,
             "msdContents" => $contents
         ]);
 
-        $g_context->writePublicPage("public/mozilla_simple_docs/" . $doc . ".html", $output);
+        KawapureSiteContext::writePublicPage("public/mozilla_simple_docs/" . $doc . ".html", $output);
     }
 }
