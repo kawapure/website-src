@@ -1,4 +1,5 @@
 $link_base_color: #1c62b9;
+$card-padding: 10px;
 
 // Body background
 body {
@@ -28,10 +29,11 @@ a {
 
 .card {
     background: #fff;
-    padding: 10px;
+    padding: $card-padding;
     border-radius: 3px;
     max-width: 750px;
     margin: 0 auto;
+    box-shadow: 2px 3px 3px rgba(0, 0, 0, 0.25);
 }
 
 #nav {
@@ -50,7 +52,9 @@ a {
 #footer-container {
     border-top: 1px solid #ccc;
     margin-top: 6px;
-    padding-top: 6px;
+
+    // Needs to be normalised with card padding:
+    padding-top: $card-padding;
 }
 
 #footer {

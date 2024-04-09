@@ -3,7 +3,14 @@
 <html lang="en">
     <head>
         {default $pageTitle = ""}
-        <meta charset="UTF-8">
+        {default $metadataTitle = $pageTitle . " - Isabella's website"}
+        {default $metadataContent = "I didn't put a metadata description for this page :P"}
+        <meta charset="UTF-8" />
+        <meta property="og:title" content={$metadataTitle} />
+        <meta property="og:description" content={$metadataContent} />
+        {* This should be changed in the future, but I just needed an image to test it.
+           No particular branding exists yet. *}
+        <meta property="og:image" content="/static/img/cute.gif" />
         <title>{block pageTitleBlock}{$pageTitle} - kawapure{/block}</title>
         <link rel="prefetch" href="/static/css/base.css" />
         <link rel="prefetch" href="/static/img/bg.png" />

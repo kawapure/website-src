@@ -4,11 +4,15 @@
 
 {var $pageTitle = "Simple Mozilla Documentation"}
 
+{var $metadataTitle = "Isabella's simple Mozilla documentation"}
+{var $metadataContent = "Because Mozilla's own documentation can be pretty hard to understand, I decided to make my own introductory documentation to the Mozilla platform."}
+
 {block content}
     <h1>Simple Mozilla Documentation</h1>
-    <p class="description">
+    <p class="description" n:capture="$metadataContentText">
         Because Mozilla's own documentation can be pretty hard to understand, I decided to make my own introductory
         documentation to the Mozilla platform.
     </p>
+    {$metadataContentText}
     {include msdLibrary, 2}
 {/block}

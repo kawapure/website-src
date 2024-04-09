@@ -79,14 +79,68 @@ class MSD
         $pd = new Parsedown();
         $file = file_get_contents("templates/mozilla_simple_docs/$doc.md");
 
+        $firstPara = self::getMarkdownFirstParagraph($file);
         $contents = $pd->text($file);
 
         $output = KawapureSiteContext::$latte->renderToString("templates/mozilla_doc_page.latte", [
             "pageName" => "mozilla-simple-docs-$doc",
             "msdTitle" => $title,
-            "msdContents" => $contents
+            "msdContents" => $contents,
+            "msdMetadataDescription" => $firstPara
         ]);
 
         KawapureSiteContext::writePublicPage("public/mozilla_simple_docs/" . $doc . ".html", $output);
+    }
+
+    /**
+     * Gets the first paragraph of a markdown document.
+     *
+     * This is used to get the text for the metadata description, which is visible when the site is
+     * linked to on various services.
+     *
+     * This is a bit of a hacky solution, but since the markdown parser can only parse to a HTML string
+     * directly, I decided I would go ahead with a hacky solution.
+     *
+     * This should be rewritten in the future to properly parse the document, and thus be able to handle
+     * cases such as links being in the first paragraph, but that's not necessary right now.
+     */
+    private static function getMarkdownFirstParagraph(string $doc): string
+    {
+        // Get the metadata description for this page. We want to get the first paragraph from
+        // the document.
+        $lines = explode("\n", trim($doc)); // Ensure that whitespace is removed
+
+        if ($lines[0][0] == "#")
+        {
+            // Drop the first line off of the file and separate new lines.
+            $lines = array_slice($lines, 1);
+        }
+
+        // Skip over any initial whitespace (or that succeeding a header)
+        for ($i = 0; $i < count($lines); $i++)
+        {
+            if (preg_match("/\w/", $lines[$i]))
+            {
+                $lines = array_slice($lines, $i);
+                break;
+            }
+        }
+
+        // Opposite thing; we remove past the next blank line.
+        for ($i = 1; $i < count($lines); $i++)
+        {
+            if (!preg_match("/\w/", $lines[$i]))
+            {
+                $lines = array_slice($lines, 0, $i);
+                break;
+            }
+        }
+
+        // And we should have our result
+        $firstPara = trim(implode(" ", $lines));
+
+        assert($firstPara != trim(implode(" ", explode("\n", $doc))));
+
+        return $firstPara;
     }
 }
