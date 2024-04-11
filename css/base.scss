@@ -14,10 +14,6 @@ html {
     font-family: Arial, Helvetica, Meiryo, sans-serif;
 }
 
-html.aliased-fonts {
-    font-family: Arial, Helvetica, "MS PGothic", sans-serif;
-}
-
 a {
     text-decoration: none;
     color: $link_base_color;
@@ -71,7 +67,25 @@ a {
 
 // Page-specific styles:
 #index-content {
-    font-size: 16px;
+    // I was originally going to have the text smaller (like 16px), but this fell into the
+    // size for "GDI legacy" rendering in Firefox, which affects Meiryo in my environment,
+    // and there had to be a half-working hack to detect aliased fonts at runtime to fix
+    // ugly Japanese font rendering. I just settled for making this font size larger, and
+    // removing the hack.
+    font-size: 20px;
+
     text-align: center;
     margin: 15px 0;
+}
+
+// MSD document header
+#doc-header {
+    .doc-date {
+        font-style: italic;
+        color: #666;
+
+        b {
+            color: #000;
+        }
+    }
 }

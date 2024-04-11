@@ -77,16 +77,31 @@ class MSD
         echo "Building Mozilla simple docs page $title ($doc)\n";
 
         $pd = new Parsedown();
-        $file = file_get_contents("templates/mozilla_simple_docs/$doc.md");
+        $path = "templates/mozilla_simple_docs/$doc.md";
+        $file = file_get_contents($path);
 
         $firstPara = self::getMarkdownFirstParagraph($file);
         $contents = $pd->text($file);
+
+        // Get the last modified time of the document:
+        // (for the time being, this is queried from Git, with the file system as a fallback if that doesn't work)
+        try
+        {
+            $lastModifiedTime = shell_exec("git log -1 --pretty=\"format:%ct\" " . $path);
+        }
+        catch (\Exception $e) {}
+
+        if (!$lastModifiedTime)
+        {
+            $lastModifiedTime = filemtime($path);
+        }
 
         $output = KawapureSiteContext::$latte->renderToString("templates/mozilla_doc_page.latte", [
             "pageName" => "mozilla-simple-docs-$doc",
             "msdTitle" => $title,
             "msdContents" => $contents,
-            "msdMetadataDescription" => $firstPara
+            "msdMetadataDescription" => $firstPara,
+            "msdLastModified" => date("j F Y", $lastModifiedTime)
         ]);
 
         KawapureSiteContext::writePublicPage("public/mozilla_simple_docs/" . $doc . ".html", $output);

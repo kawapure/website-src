@@ -17,58 +17,6 @@
         <link rel="stylesheet" href="/static/css/base.css">
     </head>
     <body id="body" data-page-name={$pageName}>
-        {* simple script to detect if fonts are aliased on the user-end *}
-        <script type="text/javascript">
-        (function(){
-            // https://www.useragentman.com/blog/2009/11/29/how-to-detect-font-smoothing-using-javascript/
-            function isAlisedFont()
-            {
-                try
-                {
-                    var c = document.createElement("canvas");
-                    c.width = "35";
-                    c.height = "35";
-
-                    c.style.display = "none";
-                    document.body.appendChild(c);
-                    var ctx = c.getContext("2d");
-
-                    ctx.textBaseline = "top";
-                    ctx.font = "10px Arial";
-                    ctx.fillStyle = "black";
-                    ctx.strokeStyle = "black";
-
-                    ctx.fillText("O", 0, 0);
-
-                    for (var y = 7; y >= 1; y--)
-                    {
-                        for (var x = 7; x >= 0; x--)
-                        {
-                            var alpha = ctx.getImageData(x, y, 1, 1).data[3];
-
-                            if (alpha != 255 && alpha !== 0)
-                            {
-                                c.parentNode.removeChild(c);
-                                return true;
-                            }
-                        }
-                    }
-
-                    c.parentNode.removeChild(c);
-                    return false;
-                }
-                catch (e)
-                {
-                    return false;
-                }
-            }
-
-            if (isAlisedFont())
-            {
-                document.documentElement.className += " aliased-fonts";
-            }
-        })();
-        </script>
         <div id="nav" class="card">
             {import "nav.latte"}
             {include navItem, "Home", "index", "/"}
