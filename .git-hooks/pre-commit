@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# -- カワプレのサイト --
+# Recursive committing script
+#
+# While submodules are already pushed recursively by Git, commits aren't made
+# to submodules recursively. This script simply ensures that the script is
+# processed recursively.
+
+PUBLIC_FOLDER_NAME="public"
+
+pushd $PUBLIC_FOLDER_NAME
+
+commit_date=$(date +'%Y/%m/%d %H:%M')
+
+git add .
+git commit --gpg-sign --signoff -m "${commit_date}"
+
+popd
