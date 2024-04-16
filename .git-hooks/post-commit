@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# -- カワプレのサイト --
+# Recursive committing script
+#
+# While submodules are already pushed recursively by Git, commits aren't made
+# to submodules recursively. This script simply ensures that the script is
+# processed recursively.
+
+# Kill the active if we're marked as active as to avoid an infinite loop.
+if git config --get custom.ignorePostCommitHook > /dev/null; then
+    exit 0
+fi
+
+# Mark us as active so we don't avoid an infinite loop.
+git config custom.ignorePostCommitHook "true"
+
+PUBLIC_FOLDER_NAME="public"
+
+# Go to the submodule directory
+pushd $PUBLIC_FOLDER_NAME
+
+commit_date=$(date +'%Y/%m/%d %H:%M')
+
+# Add changed files in the submodule
+# Note: The post-commit hook is called while Git is in the middle of a commit,
+# so we must reset the Git index file, or our new commit will be fucked up.
+# https://stackoverflow.com/questions/64108342/git-automatically-commit-submodule-with-the-same-message
+GIT_INDEX_FILE_SAV=$GIT_INDEX_FILE
+GIT_WORK_TREE_SAV=$GIT_WORK_TREE
+GIT_DIR_SAV=$GIT_DIR
+unset GIT_INDEX_FILE
+unset GIT_WORK_TREE
+unset GIT_DIR
+
+git add -A
+git commit --gpg-sign --signoff -m "${commit_date}"
+
+GIT_INDEX_FILE=$GIT_INDEX_FILE_SAV
+GIT_WORK_TREE=$GIT_WORK_TREE_SAV
+GIT_DIR=$GIT_DIR_SAV
+
+# Go back to the parent directory
+popd
+
+# Add the submodule changes. These need to be amended to the current commit.
+git add .
+git commit -S --no-verify --amend
+
+# Unmark us as active; we're done with all work now.
+git config --unset custom.ignorePostCommitHook
