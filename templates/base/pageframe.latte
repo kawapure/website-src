@@ -2,6 +2,10 @@
 <!-- shh the html is not written by hand :3 -->
 <html lang="en">
     <head>
+        <link rel="prefetch" href="/static/css/base.css" />
+        <link rel="prefetch" href="/static/img/bg2.png" />
+        <link rel="prefetch" href="/static/img/logo.png" />
+        <link rel="prefetch" href="/static/img/hana.png" />
         {default $pageTitle = ""}
         {default $metadataTitle = $pageTitle . " - Isabella's website"}
         {default $metadataContent = "I didn't put a metadata description for this page :P"}
@@ -11,19 +15,68 @@
         {* This should be changed in the future, but I just needed an image to test it.
            No particular branding exists yet. *}
         <meta property="og:image" content="/static/img/cute.gif" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{block pageTitleBlock}{$pageTitle} - kawapure{/block}</title>
-        <link rel="prefetch" href="/static/css/base.css" />
-        <link rel="prefetch" href="/static/img/bg.png" />
         <link rel="stylesheet" href="/static/css/base.css">
+        <!--[if lte IE 10]>
+        <link rel="stylesheet" href="/static/css/base-ie8.css">
+        <![endif]-->
+        {block page_styles}{/block}
+        <script src="/static/js/common.js" type="text/javascript"></script>
+        <!-- Scaling script -->
+        <script>
+        (function() {
+            var CLASS = "content-snap-width-";
+            
+            function getWidth()
+            {
+                return window.innerWidth || document.documentElement.clientWidth;
+            }
+            
+            function updatePageWidth()
+            {
+                var newWidth = getWidth();
+                
+                for (var i = 1; i <= 3; i++)
+                    g_kawapure.removeClass(document.documentElement, CLASS + String(i));
+                
+                if (newWidth < 1400 + 1)
+                {
+                    g_kawapure.addClass(document.documentElement, CLASS + "1");
+                }
+                else if (newWidth < 1900 + 1)
+                {
+                    g_kawapure.addClass(document.documentElement, CLASS + "2");
+                }
+                else
+                {
+                    g_kawapure.addClass(document.documentElement, CLASS + "3");
+                }
+            }
+            
+            g_kawapure.addEventListener(window, "resize", updatePageWidth);
+            updatePageWidth();
+        })()
+        </script>
     </head>
     <body id="body" data-page-name={$pageName}>
-        <div id="nav" class="card">
-            {import "nav.latte"}
-            {include navItem, "Home", "index", "/"}
-            {include navItem, "About me", "about", "/about"}
-            {include navItem, "Simple Mozilla Documentation", "msd", "/mozilla_simple_docs/"}
-        </div>
-        <div id="content-wrapper" class="card">
+        <div id="main-content" class="card">
+            <div id="header">
+                <!-- Early Internet Explorer hack for the gradient (no background layers) -->
+                <!--[if lte IE 10]>
+                <div class="header-gradient"></div>
+                <![endif]-->
+                <div id="logo" aria-label="kawapure's site">
+                    <a href="/" title="kawapure's site"></a>
+                </div>
+                <div id="nav">
+                    {import "nav.latte"}
+                    {include navItem, "Home", "index", "/"}
+                    {include navItem, "About me", "about", "/about"}
+                    {include navItem, "Simple Mozilla Documentation", "msd", "/mozilla_simple_docs/"}
+                    {* {include navItem, "Tools", "tools/index", "/tools/"} *}
+                </div>
+            </div>
             <div id="content">
                 {block content}
                 {/block}
@@ -32,6 +85,10 @@
                 <div id="footer">
                     <a href="/credits">
                         Site credits
+                    </a>
+                    •
+                    <a href="/contact">
+                        Contact me
                     </a>
                 </div>
             </div>

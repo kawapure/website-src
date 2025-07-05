@@ -1,5 +1,13 @@
 {define navItem, $label, $itemPageName, $link}
-    <a href={$link} n:class="$pageName == $itemPageName ? active">
-        {$label}
-    </a>
+    <span class="nav-link-container">
+        <a href={$link} n:class="$pageName == $itemPageName ? active">
+            {$label}
+        </a>
+        {* In order for the sizes of elements in the navigation bar to not change
+           whenever the user changes a page, this sizing element keeps the measurement
+           of the bold text always. *}
+        <span class="measurement-base">
+            {$label}
+        </span>
+    </span>
 {/define}

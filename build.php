@@ -31,4 +31,4 @@ echo "Building static resources...\n";
  * than the time limit, and we're waiting on an external script.
  */
 set_time_limit(0);
-shell_exec("gulp build");
+echo shell_exec("gulp build");

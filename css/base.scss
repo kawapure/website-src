@@ -1,9 +1,40 @@
 $link_base_color: #1c62b9;
 $card-padding: 10px;
 
+$primary-background-color: #fff;
+$pink-accent-color: #FFB7B8;
+
+@mixin linear-gradient($angle, $start-color, $end-color, $args...) {
+  @if $args {
+    // Ultimate fallback: all other layers (IE < 10 uses this).
+    background: $args;
+    
+    // Standard Webkit fallback
+    background: -webkit-linear-gradient($angle, $start-color, $end-color), $args;
+    // Opera
+    background: -o-linear-gradient($angle, $start-color, $end-color), $args;
+    // Firefox
+    background: -moz-linear-gradient($angle, $start-color, $end-color), $args;
+    // Standard
+    background: linear-gradient($angle, $start-color, $end-color), $args;
+  }
+  @else {
+    // Standard Webkit fallback
+    background: -webkit-linear-gradient($angle, $start-color, $end-color);
+    // Opera
+    background: -o-linear-gradient($angle, $start-color, $end-color);
+    // Firefox
+    background: -moz-linear-gradient($angle, $start-color, $end-color);
+    // Standard
+    background: linear-gradient($angle, $start-color, $end-color);
+  }
+  // Internet Explorer < 10
+  -ms-filter: "progid:DXImageTransform.Microsoft.Gradient(startColorStr='#{$start-color}', endColorStr='#{$end-color}', GradientType=0)";
+}
+
 // Body background
 body {
-    background: repeat url("/static/img/bg.png");
+    background: repeat url("/static/img/bg2.gif");
     margin: 0;
     padding: 0;
     font-size: 13px;
@@ -15,7 +46,7 @@ html {
 }
 
 code {
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'Courier New', Courier, "MS ゴシック", monospace;
     color: #2e6442;
 }
 
@@ -29,25 +60,92 @@ a {
     }
 }
 
+.hid {
+    display: none;
+}
+
+.clearfix::after {
+   content: "\00A0";
+   visibility: hidden;
+   display: block;
+   height: 0;
+   clear: both;
+}
+
+#main-content {
+    margin-top: 10px;
+}
+
 .card {
-    background: #fff;
+    background: $primary-background-color;
     padding: $card-padding;
+    border: 3px solid $pink-accent-color;
     border-radius: 3px;
     max-width: 750px;
     margin: 0 auto;
-    box-shadow: 2px 3px 3px rgba(0, 0, 0, 0.25);
+    box-shadow: -2px 4px 6px rgba(0, 0, 0, 0.25)
+}
+
+.content-snap-width-2 .card {
+    max-width: 1200px;
+}
+
+.content-snap-width-3 .card {
+    max-width: 1700px;
 }
 
 #nav {
-    margin: 16px auto;
-
-    a {
+    margin: 0 $card-padding;
+    
+    .nav-link-container {
+        position: relative;
         margin-right: 5px;
     }
 
+    a {
+        position: absolute;
+        text-align: center;
+        width: 100%;
+    }
+    
     a.active {
         color: #111;
         font-weight: 700;
+    }
+    
+    .measurement-base {
+        font-weight: 700;
+        text-align: center;
+        visibility: hidden;
+    }
+}
+
+#header {
+    height: 100px;
+    //background: linear-gradient(to right, #fff 300px, transparent), url("/static/img/hana.png");
+    @include linear-gradient(90deg, #fff 300px, transparent, url("/static/img/hana.png"));
+    //background-image: inherit, url("/static/img/hana.png");
+    border-bottom: 1px solid #ecc;
+    margin: -$card-padding;
+    margin-bottom: $card-padding;
+    padding: $card-padding 0;
+    // border-top-left-radius: 3px;
+    // border-top-right-radius: 3px;
+    
+    #nav {
+        margin: calc($card-padding / 2) ($card-padding);
+    }
+    
+    #logo {
+        a {
+            position: absolute;
+            background: no-repeat url("/static/img/logo.png");
+        }
+        
+        &, a {
+            width: 406px;
+            height: 78px;
+        }
     }
 }
 

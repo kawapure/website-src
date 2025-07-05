@@ -1,0 +1,18 @@
+@use "base";
+
+// Fixups for base.scss for old versions of Internet Explorer:
+#header {
+    // The fade to transparent doesn't work well with old versions of Internet Explorer, so we will fall
+    // back to a static image.
+    background: url("/static/img/hana.png");
+    filter: unset;
+    position: relative;
+}
+
+.header-gradient {
+    background: url("/static/img/ie8_logo_gradient.png");
+    width: 500px;
+    height: 100%;
+    position: absolute;
+    margin: (calc(-1 * base.$card-padding)) 0;
+}

@@ -1,0 +1,311 @@
+{layout "../base/pageframe.latte"}
+
+{var $pageTitle = "XUI Vector Tool"}
+
+{block page_styles}
+    <link rel="stylesheet" href="/static/css/utils-tabs.css" >
+{/block}
+
+{block content}
+    <div class="breadcrumb-container">
+        <a href="/tools/">
+            Isabella's Tools
+        </a> &gt; <b>{$pageTitle}</b>
+    </div>
+    <h1>XUI Vector Tool</h1>
+    <p>
+        This simple tool can be used to convert XUI figures from the Xbox 360's internal UI library to HTML (SVG and CSS) and
+        WPF XAML (Silverlight/UWP/Avalonia not tested).
+    </p>
+    <noscript>
+        <p>
+            In order to display this page, you must have JavaScript enabled on your browser and on this web page.
+            This web page makes use of JavaScript in order to convert the languages.
+            <a href="//github.com/kawapure/website-src/tree/main/templates/tools/xuivector.latte" target="_blank">
+            Alternatively, you can see the source code of this page for an idea of how the code works.
+            </a>
+        </p>
+    </noscript>
+    <div id="xuivector-needs-script-container" class="hid">
+        <!-- If the user has JS enabled, then immediately unhide this container. -->
+        <script>g_kawapure.removeClass(document.getElementById("xuivector-needs-script-container"), "hid")</script>
+        
+        <div id="xuivector-main-row" class="clearfix">
+            <div id="xuivector-figure-column">
+                <h3>Paste your XUI figure here:</h3>
+                <div id="xuivector-main-input-container"></div>
+            </div>
+            <div id="xuivector-preview-column">
+                <h3>SVG Preview:</h3>
+                <div id="xuivector-svg-preview-container"></div>
+            </div>
+        </div>
+        <div id="xuivector-output-row">
+            <h3>Output:</h3>
+            <div id="xuivector-output-tabs" class="kawatool-tabs">
+                <div class="kawatool-tabs-switcher">{*
+                    *}<button class="kawatool-tabs-tab kawatool-tabs-active" data-tab-target-id="xuivector-output-tab-svg">SVG & CSS</button>{*
+                    *}<button class="kawatool-tabs-tab" data-tab-target-id="xuivector-output-tab-xaml">XAML</button>
+                </div>
+                <div class="kawatool-tabs-container">
+                    <div id="xuivector-output-tab-svg" class="kawatool-tabs-active kawatool-tabs-tab-content">
+                        <h1>Hello</h1>
+                    </div>
+                    <div id="xuivector-output-tab-xaml" class="kawatool-tabs-tab-content">
+                        <h1>こんにちは</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- This element contains the default XUI figure to be shown in the code editor. I use a classic trick here
+         where you put auxiliary data in a HTML comment, which can be accessed from JS. This parses very quickly,
+         so it is a very useful trick (YouTube used to use it for AJAX templates back in the day).
+         IMPORTANT!! -- There must not be any whitespace after the opening tag, or it will break the lazy JS
+         which just assumes that the first child node is the default template. -->
+    <div id="xuivector-default-template-container"><!--<XuiFigure>
+    <Properties>
+        <Width>58.014404</Width>
+        <Height>56.079529</Height>
+        <Position>4.266756,2.636658,0.000000</Position>
+        <Stroke>
+            <Properties>
+                <StrokeColor>0xff000000</StrokeColor>
+            </Properties>
+        </Stroke>
+        <Fill>
+            <Properties>
+                <FillColor>0x300f0f0f</FillColor>
+                <Gradient>
+                    <Properties>
+                        <Radial>true</Radial>
+                        <NumStops>4</NumStops>
+                        <StopColor index="0">0x300f0f0f</StopColor>
+                        <StopColor index="1">0x200f0f0f</StopColor>
+                        <StopColor index="2">0x00000000</StopColor>
+                        <StopColor index="3">0x00000000</StopColor>
+                        <StopPos index="0">0.000000</StopPos>
+                        <StopPos index="1">0.501961</StopPos>
+                        <StopPos index="2">0.874510</StopPos>
+                        <StopPos index="3">1.000000</StopPos>
+                    </Properties>
+                </Gradient>
+                <TransformVersion>1</TransformVersion>
+            </Properties>
+        </Fill>
+        <Closed>true</Closed>
+        <Points>10,29.007202,0.000000,29.007202,0.000000,35.854858,21.420471,0,35.854858,21.420471,35.854858,21.420471,58.014404,21.420471,0,58.014404,21.420471,58.014404,21.420471,40.087036,34.658997,0,40.087036,34.658997,40.087036,34.658997,46.934692,56.079529,0,46.934692,56.079529,46.934692,56.079529,29.007202,42.840942,0,29.007202,42.840942,29.007202,42.840942,11.079712,56.079529,0,11.079712,56.079529,11.079712,56.079529,17.927368,34.658997,0,17.927368,34.658997,17.927368,34.658997,0.000000,21.420471,0,0.000000,21.420471,0.000000,21.420471,22.159546,21.420471,0,22.159546,21.420471,22.159546,21.420471,29.007202,0.000000,0,</Points>
+    </Properties>
+</XuiFigure>--></div>
+    <!-- This stylesheet may be moved in the future, but consider it primary styles for the code editor, I guess. -->
+    <style>
+        #xuivector-main-input-container {
+            border: 1px solid #ccc;
+            min-height: 550px;
+        }
+        
+        #xuivector-main-input-container .CodeMirror {
+            height: auto;
+            min-height: 550px;
+        }
+        
+        #xuivector-svg-preview-container {
+            border: 1px solid #ccc;
+            border-left-width: 0;
+            min-height: 550px;
+        }
+        
+        #xuivector-figure-column {
+            float: left;
+            width: 65%;
+        }
+        
+        #xuivector-preview-column {
+            float: right;
+            width: 35%;
+        }
+        
+        .content-snap-width-1 #xuivector-figure-column {
+            width: 100%;
+        }
+        
+        .content-snap-width-1 #xuivector-preview-column {
+            width: 100%;
+        }
+        
+        .content-snap-width-1 #xuivector-preview-column #xuivector-svg-preview-container {
+            border-left-width: 1px;
+        }
+    </style>
+    <!-- At this point, we need to load CodeMirror. -->
+    <link rel="stylesheet" href="/static/css/tp/codemirror.css">
+    <script src="/static/js/tp/codemirror.js"></script>
+    <script src="/static/js/tp/codemirror-xml.js"></script>
+    <script>
+        var g_codeMirrorInstance = CodeMirror(document.getElementById("xuivector-main-input-container"), {
+            mode: "xml",
+            lineNumbers: true,
+            autoFocus: true, // This is the main focus of this page.
+            value: document.getElementById("xuivector-default-template-container").childNodes[0].textContent,
+            viewportMargin: Infinity
+        });
+    </script>
+    <script src="/static/js/kawatool-base.js"></script>
+    <script src="/static/js/kawatool-tabs.js"></script>
+    <!-- Now that all the code editors and stuff are set up, load the main script: -->
+    <script n:syntax="off">
+        var g_xuiVector = {};
+    
+        (function(g) {
+        
+        /**
+         * Represents a Bezier curve in the points directory.
+         *
+         * @class
+         */
+        g.XuiBezierCurve = function(originX, originY, point1X, point1Y, point2X, point2Y)
+        {
+            this.originX = originX;
+            this.originY = originY;
+            this.point1X = point1X;
+            this.point1Y = point1Y;
+            this.point2X = point2X;
+            this.point2Y = point2Y;
+        };
+        
+        var c_bezierCurveSize = 6;
+            
+        /**
+         * Represents a XUI figure's points directory, i.e. the content of the figure's <Points> element.
+         *
+         * @class
+         */
+        g.XuiPointsDirectory = function()
+        {
+            this.numberOfPoints = 0;
+            this.beziers = [];
+        };
+        
+        /**
+         * Serialises this points directory an SVG path.
+         *
+         * @returns {string}
+         */
+        g.XuiPointsDirectory.prototype.serializeToSvgPath = function()
+        {
+            // SVG paths and XUI figure paths share one thing in common: they are both comprised
+            // of Bezier curves. SVG paths represent this a bit more efficiently, and thus have
+            // some slightly different semantics.
+            //
+            // XUI paths wrap around implicitly. They also have an implicit starting point. These
+            // are two qualities which SVG is explicit about: you must always explicitly set the
+            // move point, and you have to always wrap around by repeating that move point at the
+            // end (because during our conversion, we lose two points when shifting).
+            //
+            // The way I have visualised the translation is splitting the Bezier definitions after
+            // every 7 numbers (including the terminator), then dropping the terminators. This does
+            // suffice for the translation, but it produces a visually-identical shape for any
+            // purely-angular shape (i.e. a 5-point star or a rectangle). The Bezier curves require
+            // an additional transformation, which I have done by using shifting all the points
+            // to left by 2, leaving all curves flowing into one another and giving two arguments that
+            // perfectly fit for a move point (M command). This is almost perfect, but it needs to wrap
+            // around, so copy the the move point to the remaining parameters of the final curve to
+            // bring it around.
+            //
+            // The algorithm is principally the same, but as a human being, I did a lot of meaningless
+            // steps to make it easier to follow along with. We can actually skip a whole transformation
+            // step and just interpret it with this offset to begin with, which actually works just
+            // fine.
+            
+            var beginPointX = 0;
+            var beginPointY = 0;
+            
+            var outputString = "";
+            
+            if (this.beziers.length < 1)
+            {
+                return "<Invalid vector>";
+            }
+            
+            beginPointX = this.beziers[0].originX;
+            beginPointY = this.beziers[0].originY;
+            
+            outputString += "M " + String(beginPointX) + " " + String(beginPointY);
+            
+            for (var i = 0; i < this.beziers.length; i++)
+            {
+                var currentPoint = this.beziers[i];
+                var nextPoint = this.beziers[i + 1] || new XuiBezierCurve(beginPointX, beginPointY, 0, 0, 0, 0);
+                
+                outputString += " C" + currentPoint.point1X + " " + currentPoint.point1Y + " " +
+                                       currentPoint.point2X + " " + currentPoint.point2Y + " " +
+                                       nextPoint.originX + " " + nextPoint.originY;
+            }
+            
+            outputString += " Z";
+            
+            return outputString;
+        };
+        
+        /**
+         * Parses XUI points.
+         *
+         * @param {string} pointsStr  Text content of a <Points> element.
+         */
+        g.parseXuiPoints = function(pointsStr)
+        {
+            var points = pointsStr.split(",");
+            var directory = new g.XuiPointsDirectory();
+            
+            // The minimum number of definitions possible in the dictionary is 8.
+            // This includes the number of points + 1 Bezier curve + that curve's
+            // terminator.
+            if (points.length < c_bezierCurveSize + 1 + 1)
+            {
+                // TODO: Error handling.
+                return null;
+            }
+            
+            directory.numberOfPoints = Number(points[0]);
+            
+            for (var i = 1; i < points.length && i + c_bezierCurveSize < points.length; i += c_bezierCurveSize + 1 /* terminator */)
+            {
+                var bezierCurve = new g.XuiBezierCurve(
+                    Number(points[i + 0]), // Origin X
+                    Number(points[i + 1]), // Origin Y
+                    Number(points[i + 2]), // Point 1 X
+                    Number(points[i + 3]), // Point 1 Y
+                    Number(points[i + 4]), // Point 2 X
+                    Number(points[i + 5])  // Point 2 Y
+                );
+                directory.beziers.push(bezierCurve);
+            }
+            
+            // TODO: What to return?
+        };
+        
+        /**
+         * Parses an XUI document root.
+         *
+         * @param {string} documentStr  The XUI XML document as a string.
+         */
+        g.parseXuiDocument = function(documentStr)
+        {
+            var domParser = new DOMParser();
+            var xuiDoc = null;
+            
+            try
+            {
+                xuiDoc = domParser.parseFromString(documentStr, "text/xml");
+            }
+            catch (e)
+            {
+                // Failed to parse XUI document.
+            }
+            
+            
+        };
+            
+        })(g_xuiVector);
+    </script>
+{/block}
